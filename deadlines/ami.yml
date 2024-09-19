@@ -1,3 +1,18 @@
+- group: 02-functions
+  start: 19-09-2024 23:59
+  deadline: 03-10-2024 23:59
+  tasks:
+    - task: sort_students
+      score: 100
+    - task: tests_checking
+      score: 100
+    - task: admission
+      score: 150
+    - task: scorer
+      score: 150
+    - task: unixpath
+      score: 150
+
 - group: 01-intro
   start: 10-09-2024 13:00
   deadline: 23-09-2024 23:59
