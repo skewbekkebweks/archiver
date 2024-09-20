@@ -1,4 +1,5 @@
 #include "sort_students.h"
+#include <algorithm>
 
 bool CmpStudents(Student& s1, Student& s2, SortKind sort_kind) {
     if (sort_kind == SortKind::Name) {
@@ -11,6 +12,6 @@ bool CmpStudents(Student& s1, Student& s2, SortKind sort_kind) {
 }
 
 void SortStudents(std::vector<Student>& students, SortKind sort_kind) {
-    sort(students.begin(), students.end(),
+    std::sort(students.begin(), students.end(),
          [&sort_kind](Student& s1, Student& s2) -> bool { return CmpStudents(s1, s2, sort_kind); });
 }
