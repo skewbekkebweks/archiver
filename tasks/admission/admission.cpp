@@ -1,5 +1,6 @@
 #include "admission.h"
 #include <algorithm>
+#include <unordered_map>
 
 bool CmpApplicants(const Applicant* a1, const Applicant* a2) {
     const int neg_a1_points = -a1->points;
