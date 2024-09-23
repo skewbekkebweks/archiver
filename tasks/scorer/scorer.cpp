@@ -1,5 +1,4 @@
 #include "scorer.h"
-#include <unordered_map>
 
 ScoreTable GetScoredStudents(const Events& events, time_t score_time) {
     TaskUpdates task_updates;
@@ -29,7 +28,7 @@ ScoreTable GetScoredStudents(const Events& events, time_t score_time) {
 
     for (const auto& [student, tasks] : task_updates) {
         for (const auto& [task, info] : tasks) {
-            if (info.last_success_ci >= info.last_falied_ci && !info.opened_merge_requests_count) {
+            if (info.last_success_ci >= info.last_falied_ci && info.opened_merge_requests_count == 0) {
                 response[student].insert(task);
             }
         }
