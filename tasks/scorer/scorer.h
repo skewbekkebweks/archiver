@@ -4,6 +4,7 @@
 #include <set>
 #include <string>
 #include <vector>
+#include <cstdint>
 
 enum class EventType {
     CheckFailed,

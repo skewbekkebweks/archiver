@@ -1,5 +1,4 @@
 #include "scorer.h"
-#include <cstdint>
 #include <unordered_map>
 
 ScoreTable GetScoredStudents(const Events& events, time_t score_time) {
