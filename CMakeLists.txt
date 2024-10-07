@@ -37,14 +37,12 @@ add_subdirectory(tasks/scorer)
 add_subdirectory(tasks/unixpath)
 
 
-#3
+# 3
 add_subdirectory(tasks/provinces)
 add_subdirectory(tasks/search)
 add_subdirectory(tasks/rational)
 add_subdirectory(tasks/stack)
 add_subdirectory(tasks/queue)
 
-
 # project
-add_subdirectory(tasks/image_processor)
-
+add_subdirectory(tasks/archiver)
