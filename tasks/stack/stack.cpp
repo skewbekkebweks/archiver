@@ -1,9 +1,11 @@
 #include "stack.h"
 
 
-Node::Node(int32_t value, Node* previous) : value(value), previous(previous) {}
+Node::Node(int32_t value, Node* previous) : value(value), previous(previous) {
+}
 
-Stack::Stack() : head_(nullptr), size_(0) {}
+Stack::Stack() : head_(nullptr), size_(0) {
+}
 
 Stack::~Stack() {
     Clear();
@@ -28,7 +30,7 @@ void Stack::Pop() {
 }
 
 int32_t Stack::Top() const {
-    if  (Empty()) {
+    if (Empty()) {
         return 0;
     }
 
