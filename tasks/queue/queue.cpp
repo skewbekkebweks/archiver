@@ -1,8 +1,10 @@
 #include "queue.h"
 
-Node::Node(int32_t value, Node* next) : value(value), next(next) {}
+Node::Node(int32_t value, Node* next) : value(value), next(next) {
+}
 
-Queue::Queue() : front_(nullptr), tail_(nullptr), size_(0) {}
+Queue::Queue() : front_(nullptr), tail_(nullptr), size_(0) {
+}
 
 Queue::~Queue() {
     Clear();
