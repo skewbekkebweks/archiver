@@ -16,6 +16,10 @@ void Stack::Push(int32_t value) {
 }
 
 void Stack::Pop() {
+    if (Empty()) {
+        return;
+    }
+
     Node* to_delete = head_;
     head_ = head_->previous;
 
@@ -24,6 +28,10 @@ void Stack::Pop() {
 }
 
 int32_t Stack::Top() const {
+    if  (Empty()) {
+        return 0;
+    }
+
     return head_->value;
 }
 
