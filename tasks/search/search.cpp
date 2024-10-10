@@ -73,6 +73,9 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
     for (size_t i = 0; i < count_text_strings; ++i) {
         double result = 0;
         for (size_t j = 0; j < count_query_words; ++j) {
+            if (idf[j] == 0) {
+                continue;
+            }
             std::string_view query_word = query_words[j];
             int occurrences_number = 0;
             for (std::string_view string_word : text_strings_words[i]) {
