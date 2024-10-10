@@ -62,7 +62,7 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
 
     std::vector<std::string_view> query_words =
         SplitByCondition(query, [](char c) -> bool { return !std::isalpha(c); });
-        
+
     auto last = std::unique(query_words.begin(), query_words.end());
     query_words.erase(last, query_words.end());
 
