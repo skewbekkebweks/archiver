@@ -24,7 +24,7 @@ bool operator==(std::string_view s1, std::string_view s2) {
     return CaseInsensitiveCompare(s1, s2);
 }
 
-std::vector<std::string_view> SplitByCondition(std::string_view str, auto condition, bool can_be_empty=false) {
+std::vector<std::string_view> SplitByCondition(std::string_view str, auto condition, bool can_be_empty = false) {
     std::vector<std::string_view> result;
     while (!str.empty()) {
         size_t end = 0;
@@ -95,7 +95,7 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
                     occurrences_number++;
                 }
             }
-            
+
             result += static_cast<double>(occurrences_number) / static_cast<double>(text_strings_words[i].size()) *
                       log(static_cast<double>(count_text_strings) / static_cast<double>(idf[j]));
         }
