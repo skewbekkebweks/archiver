@@ -16,10 +16,6 @@ bool TfIdfPairsCompare(std::pair<double, size_t> p1, std::pair<double, size_t> p
 }
 
 bool CaseInsensitiveCompare(std::string_view s1, std::string_view s2) {
-    if (s1.size() != s2.size()) {
-        return false;
-    }
-
     return std::equal(s1.begin(), s1.end(), s2.begin(), s2.end(),
                       [](char a, char b) { return std::tolower(a) == std::tolower(b); });
 }
@@ -28,7 +24,7 @@ bool operator==(std::string_view s1, std::string_view s2) {
     return CaseInsensitiveCompare(s1, s2);
 }
 
-std::vector<std::string_view> SplitByCondition(std::string_view str, auto condition) {
+std::vector<std::string_view> SplitByCondition(std::string_view str, auto condition, bool can_be_empty=false) {
     std::vector<std::string_view> result;
     while (!str.empty()) {
         size_t end = 0;
@@ -36,9 +32,10 @@ std::vector<std::string_view> SplitByCondition(std::string_view str, auto condit
             end++;
         }
 
-        if (end != 0) {
+        if (end != 0 || can_be_empty) {
             result.push_back(str.substr(0, end));
         }
+
         str.remove_prefix(std::min(str.size(), end + 1));
     }
 
@@ -90,6 +87,7 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
             if (idf[j] == 0) {
                 continue;
             }
+
             std::string_view query_word = query_words[j];
             int occurrences_number = 0;
             for (std::string_view string_word : text_strings_words[i]) {
@@ -97,6 +95,7 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
                     occurrences_number++;
                 }
             }
+            
             result += static_cast<double>(occurrences_number) / static_cast<double>(text_strings_words[i].size()) *
                       log(static_cast<double>(count_text_strings) / static_cast<double>(idf[j]));
         }
