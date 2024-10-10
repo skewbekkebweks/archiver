@@ -45,10 +45,16 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
     std::vector<std::string_view> text_strings = SplitByCondition(text, [](char c) -> bool { return c == '\n'; });
     size_t count_text_strings = text_strings.size();
 
-    std::vector<std::vector<std::string_view>> text_strings_words(count_text_strings);
+    std::vector<std::vector<std::string_view>> text_strings_words;
     for (size_t i = 0; i < count_text_strings; ++i) {
-        text_strings_words[i] = SplitByCondition(text_strings[i], [](char c) -> bool { return !std::isalpha(c); });
+        std::vector<std::string_view> new_string_words =
+            SplitByCondition(text_strings[i], [](char c) -> bool { return !std::isalpha(c); });;
+
+        if (!new_string_words.empty()) {
+            text_strings_words.push_back(new_string_words);
+        }
     }
+    count_text_strings = text_strings_words.size();
 
     std::vector<std::string_view> query_words =
         SplitByCondition(query, [](char c) -> bool { return !std::isalpha(c); });
