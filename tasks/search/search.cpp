@@ -48,7 +48,7 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
     std::vector<std::vector<std::string_view>> text_strings_words;
     for (size_t i = 0; i < count_text_strings; ++i) {
         std::vector<std::string_view> new_string_words =
-            SplitByCondition(text_strings[i], [](char c) -> bool { return !std::isalpha(c); });;
+            SplitByCondition(text_strings[i], [](char c) -> bool { return !std::isalpha(c); });
 
         if (!new_string_words.empty()) {
             text_strings_words.push_back(new_string_words);
@@ -92,7 +92,7 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
             result += static_cast<double>(occurrences_number) / static_cast<double>(text_strings_words[i].size()) *
                       log(static_cast<double>(count_text_strings) / static_cast<double>(idf[j]));
         }
-        if (result > 0) {
+        if (result > EPS) {
             tf_idf.emplace_back(result, i);
         }
     }
