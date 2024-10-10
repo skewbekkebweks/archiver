@@ -5,7 +5,7 @@
 #include <string_view>
 #include <vector>
 
-const double EPS = 1e-6;
+const double EPS = 1e-9;
 
 bool TfIdfPairsCompare(std::pair<double, size_t> p1, std::pair<double, size_t> p2) {
     if (fabs(p1.first - p2.first) > EPS) {
