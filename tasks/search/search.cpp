@@ -5,6 +5,14 @@
 #include <string_view>
 #include <vector>
 
+bool TfIdfPairsCompare(std::pair<double, size_t> p1, std::pair<double, size_t> p2) {
+    if (p1.first != p2.first) {
+        return p1.first > p2.first;
+    }
+
+    return p1.second < p2.second;
+}
+
 bool CaseInsensitiveCompare(std::string_view s1, std::string_view s2) {
     if (s1.size() != s2.size()) {
         return false;
@@ -78,8 +86,7 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
         }
     }
 
-    std::sort(tf_idf.begin(), tf_idf.end());
-    std::reverse(tf_idf.begin(), tf_idf.end());
+    std::sort(tf_idf.begin(), tf_idf.end(), TfIdfPairsCompare);
 
     std::vector<std::string_view> result;
 
