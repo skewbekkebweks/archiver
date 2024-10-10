@@ -24,6 +24,10 @@ bool CaseInsensitiveCompare(std::string_view s1, std::string_view s2) {
                       [](char a, char b) { return std::tolower(a) == std::tolower(b); });
 }
 
+bool operator==(std::string_view s1, std::string_view s2) {
+    return CaseInsensitiveCompare(s1, s2);
+}
+
 std::vector<std::string_view> SplitByCondition(std::string_view str, auto condition) {
     std::vector<std::string_view> result;
     while (!str.empty()) {
@@ -58,6 +62,10 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
 
     std::vector<std::string_view> query_words =
         SplitByCondition(query, [](char c) -> bool { return !std::isalpha(c); });
+        
+    auto last = std::unique(query_words.begin(), query_words.end());
+    query_words.erase(last, query_words.end());
+
     size_t count_query_words = query_words.size();
 
     std::vector<int> idf(count_query_words, 0);
@@ -66,7 +74,7 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
         std::string_view query_word = query_words[i];
         for (const std::vector<std::string_view>& text_string : text_strings_words) {
             for (std::string_view string_word : text_string) {
-                if (CaseInsensitiveCompare(query_word, string_word)) {
+                if (query_word == string_word) {
                     idf[i]++;
                     break;
                 }
@@ -85,7 +93,7 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
             std::string_view query_word = query_words[j];
             int occurrences_number = 0;
             for (std::string_view string_word : text_strings_words[i]) {
-                if (CaseInsensitiveCompare(query_word, string_word)) {
+                if (query_word == string_word) {
                     occurrences_number++;
                 }
             }
