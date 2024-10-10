@@ -14,7 +14,7 @@ private:
     std::function<void()> func_;
 };
 
-#define CONCATENATE_HELPER(X, Y) X##Y
-#define CONCATENATE(X, Y) COMBINE_HELPER(X, Y)
-#define UNIQUE_NAME(name) COMBINE(name, __LINE__)
+#define CONCATENATE_HELPER(X, Y) X ## Y
+#define CONCATENATE(X, Y) CONCATENATE_HELPER(X, Y)
+#define UNIQUE_NAME(name) CONCATENATE(name, __LINE__)
 #define defer Defer UNIQUE_NAME(var_) = [&]() -> void
