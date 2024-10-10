@@ -40,7 +40,8 @@ std::vector<std::string_view> Search(std::string_view text, std::string_view que
         text_strings_words[i] = SplitByCondition(text_strings[i], [](char c) -> bool { return !std::isalpha(c); });
     }
 
-    std::vector<std::string_view> query_words = SplitByCondition(query, [](char c) -> bool { return !std::isalpha(c); });
+    std::vector<std::string_view> query_words =
+        SplitByCondition(query, [](char c) -> bool { return !std::isalpha(c); });
     size_t count_query_words = query_words.size();
 
     std::vector<int> idf(count_query_words, 0);
