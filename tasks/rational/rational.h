@@ -1,5 +1,6 @@
 #pragma once
 
+#include <compare>
 #include <stdexcept>
 #include <iostream>
 #include <numeric>
@@ -63,16 +64,18 @@ Rational operator++(Rational& ratio, int);
 
 Rational operator--(Rational& ratio, int);
 
-bool operator<(const Rational& lhs, const Rational& rhs);
+// bool operator<(const Rational& lhs, const Rational& rhs);
 
-bool operator>(const Rational& lhs, const Rational& rhs);
+// bool operator>(const Rational& lhs, const Rational& rhs);
 
-bool operator<=(const Rational& lhs, const Rational& rhs);
+// bool operator<=(const Rational& lhs, const Rational& rhs);
 
-bool operator>=(const Rational& lhs, const Rational& rhs);
+// bool operator>=(const Rational& lhs, const Rational& rhs);
 
 bool operator==(const Rational& lhs, const Rational& rhs);
 
-bool operator!=(const Rational& lhs, const Rational& rhs);
+// bool operator!=(const Rational& lhs, const Rational& rhs);
+
+std::strong_ordering operator<=>(const Rational& lhs, const Rational& rhs);
 
 std::ostream& operator<<(std::ostream& os, const Rational& ratio);
