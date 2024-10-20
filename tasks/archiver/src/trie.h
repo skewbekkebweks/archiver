@@ -24,12 +24,9 @@ void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_
 }
 
 void Clear(TrieNode* cur_node) {
-    if (cur_node == nullptr) {
-        return;
+    if (cur_node != nullptr) {
+        Clear(cur_node->left);
+        Clear(cur_node->right);
+        delete cur_node;
     }
-
-    Clear(cur_node->left);
-    Clear(cur_node->right);
-
-    delete cur_node;
 }
