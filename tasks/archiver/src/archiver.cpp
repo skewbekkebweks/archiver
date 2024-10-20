@@ -6,6 +6,7 @@
 #include <cstdint>
 #include <fstream>
 #include <iostream>
+#include <optional>
 #include <ostream>
 #include <string>
 #include <map>
@@ -39,7 +40,7 @@ uint16_t ForceGetFromReader(BitStream& bs, int bits_cnt) {
     throw IncorrectFileDataFormat{};
 }
 
-uint16_t GetSymbolFrom(std::map<std::string, uint16_t> codes, BitStream& bs) {
+uint16_t GetSymbolFromCodes(std::map<std::string, uint16_t> codes, BitStream& bs) {
     std::string s;
 
     while (!codes.contains(s)) {
@@ -59,14 +60,7 @@ void UpdateCodes(std::vector<std::string>& current_free_codes, uint16_t starts_w
     swap(current_free_codes, next_free_codes);
 }
 
-std::vector<std::pair<uint16_t, std::string>> GenerateCodes(std::map<uint16_t, int> frequency_map) {
-    std::vector<std::pair<uint16_t, int>> sorted_symbols;
-    for (auto [symbol, frequency] : frequency_map) {
-        sorted_symbols.emplace_back(symbol, frequency);
-    } 
-    std::sort(sorted_symbols.begin(), sorted_symbols.end(), CompareCodes);
-    std::reverse(sorted_symbols.begin(), sorted_symbols.end());
-
+TrieNode* BuildTrie(std::map<uint16_t, int> frequency_map) {
     std::priority_queue<TrieNode*, std::vector<TrieNode*>, TrieNodeCompare> frequencies;
     for (auto [symbol, frequency] : frequency_map) {
         frequencies.emplace(new TrieNode{frequency, nullptr, nullptr});
@@ -84,19 +78,38 @@ std::vector<std::pair<uint16_t, std::string>> GenerateCodes(std::map<uint16_t, i
     }
 
     TrieNode* root = frequencies.top();
+    return root;
+}
+
+std::map<uint16_t, uint16_t> GetCodesSizeCount(std::map<uint16_t, int> frequency_map) {
+    TrieNode* root = BuildTrie(frequency_map);
     std::map<uint16_t, uint16_t> codes_size_count;
     FillCodesSizeCount(codes_size_count, 0, root);
+    Clear(root);
 
-    uint16_t symbols_count = frequency_map.size();
+    return codes_size_count;
+}
+
+std::vector<std::pair<uint16_t, std::string>> GenerateCodes(std::map<uint16_t, int> frequency_map) {
+    std::vector<std::pair<uint16_t, int>> sorted_symbols;
+    for (auto [symbol, frequency] : frequency_map) {
+        sorted_symbols.emplace_back(symbol, frequency);
+    } 
+    std::sort(sorted_symbols.begin(), sorted_symbols.end(), CompareCodes);
+    std::reverse(sorted_symbols.begin(), sorted_symbols.end());
+
+    std::map<uint16_t, uint16_t> codes_size_count = GetCodesSizeCount(frequency_map);
+
+    uint16_t symbols_count = sorted_symbols.size();
     uint16_t symbols_generated_count = 0;
 
     std::vector<std::string> current_free_codes{"0", "1"};
 
     std::vector<std::pair<uint16_t, std::string>> codes;
 
-    uint16_t i = 1;
+    uint16_t current_symbol_size = 1;
     while (symbols_generated_count != symbols_count) {
-        uint16_t count_symbols_current_size = codes_size_count[i];
+        uint16_t count_symbols_current_size = codes_size_count[current_symbol_size];
 
         for (uint16_t i = 0; i < count_symbols_current_size; ++i) {
             codes.emplace_back(sorted_symbols[symbols_generated_count].first, current_free_codes[i]);
@@ -104,7 +117,7 @@ std::vector<std::pair<uint16_t, std::string>> GenerateCodes(std::map<uint16_t, i
         }
 
         UpdateCodes(current_free_codes, count_symbols_current_size);
-        i++;
+        current_symbol_size++;
     }
     return codes;
 }
@@ -136,7 +149,7 @@ void Encode(std::string archive_name, std::vector<std::string> filenames) {
         }
 
         char c = 0;
-        while (file_in.get(c)) {  // TODO: make this reading from BitStream 
+        while (file_in.get(c)) {
             frequency_map[c]++;
         }
 
@@ -147,7 +160,6 @@ void Encode(std::string archive_name, std::vector<std::string> filenames) {
 
         size_t max_sybmol_code_size = 0;
         for (const auto& [symbol, code] : ordered_codes) {
-            std::cout << code << ' ' << symbol << '\n';  // TODO: remove std::cout later
 
             codes[symbol] = code;
             count_with_size[code.size()]++;
@@ -172,14 +184,9 @@ void Encode(std::string archive_name, std::vector<std::string> filenames) {
         file_in.clear();
         file_in.seekg(0, std::ios::beg);
 
-        if (!file_in.is_open()) {
-            throw FileDoesNotExist{filename};
-        }
-
         while (file_in.get(c)) {
             archive_writer.WriteSeq(codes[c]);
         }
-
 
         if (i == filenames.size() - 1) {
             archive_writer.WriteSeq(codes[ARCHIVE_END]);
@@ -222,25 +229,19 @@ void Decode(std::string archive_name) {
             UpdateCodes(current_free_codes, count_symbols_current_size);
         }
 
-        for (auto [key, value] : codes) {  // TODO: remove debug outputs
-            std::cout << key << ' ' << value << '\n';
-        }
-
         uint16_t next_symbol = 0;
 
         std::string filename;
-        while ((next_symbol = GetSymbolFrom(codes, archive_reader)) != FILENAME_END) {
+        while ((next_symbol = GetSymbolFromCodes(codes, archive_reader)) != FILENAME_END) {
             filename += static_cast<char>(next_symbol);
         }
-
-        std::cout << filename << '\n';  // TODO: remove debug outputs
 
         std::ofstream file_out(filename);
 
         BitStream file_writer(file_out);
 
         while (true) {
-            next_symbol = GetSymbolFrom(codes, archive_reader);
+            next_symbol = GetSymbolFromCodes(codes, archive_reader);
             if (next_symbol == ONE_MORE_FILE) {
                 break;
             }
@@ -248,15 +249,25 @@ void Decode(std::string archive_name) {
                 return;
             }
 
-            std::cout << next_symbol << ' ' << static_cast<char>(next_symbol) << '\n';  // TODO: remove debug outputs
-
             file_writer.WriteBits(BYTE_SIZE, static_cast<char>(next_symbol), false);
         }
     }
 }
 
 void PrintHelp() {
-    std::cout << "Hello world!" << '\n';
+        std::cout << "Usage: archiver [OPTIONS]\n"
+              << "Options:\n"
+              << "  -c, --create ARCHIVE_NAME FILE1 [FILE2 ...]  Create an archive with the specified name containing the specified files.\n"
+              << "      - ARCHIVE_NAME : Name of the output archive file.\n"
+              << "      - FILE1, FILE2, ... : List of files to archive.\n"
+              << "  -d, --decompress ARCHIVE_NAME                   Decompress the specified archive, extracting its contents to the current directory.\n"
+              << "      - ARCHIVE_NAME : Name of the archive file to decompress.\n"
+              << "  -h, --help                                       Display this help message and exit.\n"
+              << "Examples:\n"
+              << "  archiver -c my_archive.zip file1.txt file2.txt"
+              << "  archiver -d my_archive.zip"
+              << "  archiver --help"
+              << "Note: Ensure that you have permission to read the input files and write to the desired output location.\n";
 }
 
 int main(int argc, char* argv[]) {

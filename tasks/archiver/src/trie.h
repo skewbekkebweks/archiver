@@ -1,8 +1,6 @@
-#include <_types/_uint16_t.h>
+#include <__utility/cmp.h>
 #include <map>
 #include <string>
-
-const uint16_t NULL_SYMBOL = UINT16_MAX;
 
 struct TrieNode {
     int frequency;
@@ -16,7 +14,6 @@ struct TrieNodeCompare {
     }
 };
 
-
 void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_depth, TrieNode* cur_node) {
     if (cur_node->left == nullptr) {
         codes_size_count[cur_depth]++;
@@ -25,6 +22,15 @@ void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_
 
     FillCodesSizeCount(codes_size_count, cur_depth + 1, cur_node->left);
     FillCodesSizeCount(codes_size_count, cur_depth + 1, cur_node->right);
+}
+
+void Clear(TrieNode* cur_node) {
+    if (cur_node == nullptr) {
+        return;
+    }
+
+    Clear(cur_node->left);
+    Clear(cur_node->right);
 
     delete cur_node;
-} 
+}

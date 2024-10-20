@@ -12,15 +12,15 @@ const int BYTE_SIZE = 8;
 class BitStream {
 public:
     explicit BitStream() 
-        : in_(std::cin), out_(std::cout), buffer_in_(0), buffer_out_(0), buffer_bit_count_in_(0), buffer_bit_count_out_(0), is_end_of_file_reached_(false) {
+        : in_(std::cin), out_(std::cout), buffer_in_(0), buffer_out_(0), buffer_bit_count_in_(0), buffer_bit_count_out_(0), failed_(false) {
     }
 
     explicit BitStream(std::ostream& output)
-        : in_(std::cin), out_(output), buffer_in_(0), buffer_out_(0), buffer_bit_count_in_(0), buffer_bit_count_out_(0), is_end_of_file_reached_(false) {
+        : in_(std::cin), out_(output), buffer_in_(0), buffer_out_(0), buffer_bit_count_in_(0), buffer_bit_count_out_(0), failed_(false) {
     }
 
     explicit BitStream(std::istream& input, std::ostream& output = std::cout)
-        : in_(input), out_(output), buffer_in_(0), buffer_out_(0), buffer_bit_count_in_(0), buffer_bit_count_out_(0), is_end_of_file_reached_(false) {
+        : in_(input), out_(output), buffer_in_(0), buffer_out_(0), buffer_bit_count_in_(0), buffer_bit_count_out_(0), failed_(false) {
     }
 
     ~BitStream() {
@@ -70,11 +70,6 @@ public:
 
         return value;
     }
-
-    void SetReaderToStart() {
-        in_.clear();
-        in_.seekg(0, std::ios::beg);
-    }
 private:
     std::istream& in_;
     std::ostream& out_;
@@ -83,7 +78,7 @@ private:
     int buffer_bit_count_in_;
     int buffer_bit_count_out_;
 
-    bool is_end_of_file_reached_;
+    bool failed_;
 
     void WriteBit(bool bit) {
         buffer_out_ = (buffer_out_ << 1) | (bit ? 1 : 0);
@@ -98,17 +93,16 @@ private:
 
     std::optional<bool> ReadBit() {
         if (buffer_bit_count_in_ == 0) {
-            if (in_.eof()) {
-                is_end_of_file_reached_ = true;
-            } else {
-                buffer_in_ = in_.get();
-                buffer_bit_count_in_ = BYTE_SIZE;
+            buffer_in_ = in_.get();
+            buffer_bit_count_in_ = BYTE_SIZE;
+            if (in_.eof() || in_.fail()) {
+                failed_ = true;
             }
         }
         bool bit = (buffer_in_ >> (BYTE_SIZE - 1)) & 1;
         buffer_in_ <<= 1;
         buffer_bit_count_in_--;
-        if (is_end_of_file_reached_) {
+        if (failed_) {
             return std::nullopt;
         } else {
             return bit;
