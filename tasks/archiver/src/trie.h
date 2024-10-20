@@ -17,14 +17,14 @@ struct TrieNodeCompare {
 };
 
 
-void FillCodes(std::map<uint16_t, uint16_t>& codes, int cur_depth, TrieNode* cur_node) {
+void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_depth, TrieNode* cur_node) {
     if (cur_node->left == nullptr) {
-        codes[cur_depth]++;
+        codes_size_count[cur_depth]++;
         return;
     }
 
-    FillCodes(codes, cur_depth + 1, cur_node->left);
-    FillCodes(codes, cur_depth + 1, cur_node->right);
+    FillCodesSizeCount(codes_size_count, cur_depth + 1, cur_node->left);
+    FillCodesSizeCount(codes_size_count, cur_depth + 1, cur_node->right);
 
     delete cur_node;
 } 

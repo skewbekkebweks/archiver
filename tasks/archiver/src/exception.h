@@ -15,6 +15,13 @@ public:
     }
 };
 
+class IncorrectFileDataFormat : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "File has incorrect data format";
+    }
+};
+
 class FileDoesNotExist : public std::exception {
 public:
     explicit FileDoesNotExist(const std::string& filename) : filename_(filename) {}

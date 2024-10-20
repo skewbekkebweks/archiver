@@ -30,14 +30,33 @@ bool CompareCodes(const std::pair<uint16_t, int>& lhs, const std::pair<uint16_t,
     return lhs.second < rhs.second;
 }
 
+uint16_t ForceGetFromReader(BitStream& bs, int bits_cnt) {
+    std::optional<uint16_t> number = bs.ReadBits(bits_cnt);
+    if (number.has_value()) {
+        return number.value();
+    }
+    
+    throw IncorrectFileDataFormat{};
+}
+
 uint16_t GetSymbolFrom(std::map<std::string, uint16_t> codes, BitStream& bs) {
     std::string s;
 
     while (!codes.contains(s)) {
-        s += (bs.ReadBit() ? '1' : '0');
+        s += (ForceGetFromReader(bs, 1) ? '1' : '0');
     }
 
     return codes[s];
+}
+
+void UpdateCodes(std::vector<std::string>& current_free_codes, uint16_t starts_with = 0) {
+    std::vector<std::string> next_free_codes;
+    for (size_t i = starts_with; i < current_free_codes.size(); ++i) {
+        next_free_codes.push_back(current_free_codes[i] + "0");
+        next_free_codes.push_back(current_free_codes[i] + "1");
+    }
+
+    swap(current_free_codes, next_free_codes);
 }
 
 std::vector<std::pair<uint16_t, std::string>> GenerateCodes(std::map<uint16_t, int> frequency_map) {
@@ -65,163 +84,163 @@ std::vector<std::pair<uint16_t, std::string>> GenerateCodes(std::map<uint16_t, i
     }
 
     TrieNode* root = frequencies.top();
-    std::map<uint16_t, uint16_t> symbols_size_count;
-    FillCodes(symbols_size_count, 0, root);
+    std::map<uint16_t, uint16_t> codes_size_count;
+    FillCodesSizeCount(codes_size_count, 0, root);
 
     uint16_t symbols_count = frequency_map.size();
-    uint16_t current_symbols_count = 0;
+    uint16_t symbols_generated_count = 0;
 
     std::vector<std::string> current_free_codes{"0", "1"};
 
     std::vector<std::pair<uint16_t, std::string>> codes;
 
-    int i = 1;
-    while (current_symbols_count != symbols_count) {
-        uint16_t count_symbols_current_size = symbols_size_count[i];
+    uint16_t i = 1;
+    while (symbols_generated_count != symbols_count) {
+        uint16_t count_symbols_current_size = codes_size_count[i];
+
         for (uint16_t i = 0; i < count_symbols_current_size; ++i) {
-            codes.emplace_back(sorted_symbols[current_symbols_count].first, current_free_codes[i]);
-            current_symbols_count++;
-        }
-        std::vector<std::string> next_free_codes;
-        for (size_t i = count_symbols_current_size; i < current_free_codes.size(); ++i) {
-            next_free_codes.push_back(current_free_codes[i] + "0");
-            next_free_codes.push_back(current_free_codes[i] + "1");
+            codes.emplace_back(sorted_symbols[symbols_generated_count].first, current_free_codes[i]);
+            symbols_generated_count++;
         }
 
-        swap(current_free_codes, next_free_codes);
+        UpdateCodes(current_free_codes, count_symbols_current_size);
         i++;
     }
     return codes;
 }
 
-void Encode(std::string archive_name, std::vector<std::string> file_names) {
-    std::map<uint16_t, int> frequency_map;
+void Encode(std::string archive_name, std::vector<std::string> filenames) {
+    std::ofstream archive_out(archive_name);
+    if (!archive_out.is_open()) {
+        throw FileDoesNotExist{archive_name};
+    }
+    BitStream archive_writer{archive_out};
 
-    frequency_map[FILENAME_END] = 1;
-    frequency_map[ONE_MORE_FILE] = 1;
-    frequency_map[ARCHIVE_END] = 1;
+    for (size_t i = 0; i < filenames.size(); ++i) {
+        const std::string filename = filenames[i];
+        std::map<uint16_t, int> frequency_map;
 
-    for (const std::string& file_name : file_names) {
-        for (char c : std::filesystem::path(file_name).filename().string()) {
+        frequency_map[FILENAME_END] = 1;
+        frequency_map[ONE_MORE_FILE] = 1;
+        frequency_map[ARCHIVE_END] = 1;
+
+        std::string filename_wo_path = std::filesystem::path(filename).filename().string();
+
+        for (char c : filename_wo_path) {
             frequency_map[c]++;
         }
 
-        std::ifstream file(file_name);
-
-        if (!file.is_open()) {
-            throw FileDoesNotExist{file_name};
+        std::ifstream file_in(filename);
+        if (!file_in.is_open()) {
+            throw FileDoesNotExist{filename};
         }
 
         char c = 0;
-        while (file.get(c)) {
+        while (file_in.get(c)) {  // TODO: make this reading from BitStream 
             frequency_map[c]++;
         }
-    }
 
-    std::vector<std::pair<uint16_t, std::string>> ordered_codes = GenerateCodes(frequency_map);
+        std::vector<std::pair<uint16_t, std::string>> ordered_codes = GenerateCodes(frequency_map);
 
-    std::map<uint16_t, std::string> codes;
-    std::map<size_t, int16_t> count_with_size;
+        std::map<uint16_t, std::string> codes;
+        std::map<size_t, int16_t> count_with_size;
 
-    size_t max_sybmol_code_size = 0;
-    for (auto [symbol, code] : ordered_codes) {
-        std::cout << code << ' ' << symbol << '\n';
-        codes[symbol] = code;
-        count_with_size[code.size()]++;
-        max_sybmol_code_size = std::max(max_sybmol_code_size, code.size());
-    }
+        size_t max_sybmol_code_size = 0;
+        for (const auto& [symbol, code] : ordered_codes) {
+            std::cout << code << ' ' << symbol << '\n';  // TODO: remove std::cout later
 
-    std::ofstream file(archive_name);
-    BitStream bs{file};
-
-    bs.WriteBits(BITS_IN_ITEM, ordered_codes.size());
-    for (auto [symbol, code] : ordered_codes) {
-        bs.WriteBits(BITS_IN_ITEM, symbol);
-    }
-    for (size_t size = 1; size <= max_sybmol_code_size; ++size) {
-        bs.WriteBits(BITS_IN_ITEM, count_with_size[size]);
-    }
-
-    for (int i = 0; i < file_names.size(); ++i) {
-        if (i > 0) {
-            bs.WriteSeq(codes[ONE_MORE_FILE]);
-        }
-        std::string file_name = file_names[i];
-        for (char c : std::filesystem::path(file_name).filename().string()) {
-            bs.WriteSeq(codes[c]);
+            codes[symbol] = code;
+            count_with_size[code.size()]++;
+            max_sybmol_code_size = std::max(max_sybmol_code_size, code.size());
         }
 
-        bs.WriteSeq(codes[FILENAME_END]);
+        archive_writer.WriteBits(BITS_IN_ITEM, ordered_codes.size());
 
-        std::ifstream file(file_name);
-
-        if (!file.is_open()) {
-            throw FileDoesNotExist{file_name};
+        for (auto [symbol, code] : ordered_codes) {
+            archive_writer.WriteBits(BITS_IN_ITEM, symbol);
         }
 
-        char c = 0;
-        while (file.get(c)) {
-            bs.WriteSeq(codes[c]);
+        for (size_t size = 1; size <= max_sybmol_code_size; ++size) {
+            archive_writer.WriteBits(BITS_IN_ITEM, count_with_size[size]);
+        }
+
+        for (char c : filename_wo_path) {
+            archive_writer.WriteSeq(codes[c]);
+        }
+        archive_writer.WriteSeq(codes[FILENAME_END]);
+
+        file_in.clear();
+        file_in.seekg(0, std::ios::beg);
+
+        if (!file_in.is_open()) {
+            throw FileDoesNotExist{filename};
+        }
+
+        while (file_in.get(c)) {
+            archive_writer.WriteSeq(codes[c]);
+        }
+
+
+        if (i == filenames.size() - 1) {
+            archive_writer.WriteSeq(codes[ARCHIVE_END]);
+        } else {
+            archive_writer.WriteSeq(codes[ONE_MORE_FILE]);
         }
     }
-    bs.WriteSeq(codes[ARCHIVE_END]);
 }
 
 void Decode(std::string archive_name) {
-    std::ifstream file(archive_name);
+    std::ifstream archive_in(archive_name);
 
-    if (!file.is_open()) {
+    if (!archive_in.is_open()) {
         throw FileDoesNotExist{archive_name};
     }
 
-    BitStream bs{file};
+    BitStream archive_reader{archive_in};
 
     while (true) {
         std::map<std::string, uint16_t> codes;
 
-        uint16_t symbols_count = bs.ReadBits(BITS_IN_ITEM);
+        uint16_t symbols_count = ForceGetFromReader(archive_reader, BITS_IN_ITEM);
+
         std::vector<uint16_t> symbols(symbols_count);
         for (int i = 0; i < symbols_count; ++i) {
-            symbols[i] = bs.ReadBits(BITS_IN_ITEM);
+            symbols[i] = ForceGetFromReader(archive_reader, BITS_IN_ITEM);
         }
-        uint16_t current_symbols_count = 0;
+
+        uint16_t symbols_read_count = 0;
         std::vector<std::string> current_free_codes{"0", "1"};
-        while (current_symbols_count != symbols_count) {
-            uint16_t count_symbols_current_size = bs.ReadBits(BITS_IN_ITEM);
+
+        while (symbols_read_count != symbols_count) {
+            uint16_t count_symbols_current_size = ForceGetFromReader(archive_reader, BITS_IN_ITEM);
+
             for (uint16_t i = 0; i < count_symbols_current_size; ++i) {
-                codes[current_free_codes[i]] = symbols[current_symbols_count];
-                current_symbols_count++;
-            }
-            std::vector<std::string> next_free_codes;
-            for (size_t i = count_symbols_current_size; i < current_free_codes.size(); ++i) {
-                next_free_codes.push_back(current_free_codes[i] + "0");
-                next_free_codes.push_back(current_free_codes[i] + "1");
+                codes[current_free_codes[i]] = symbols[symbols_read_count];
+                symbols_read_count++;
             }
 
-            swap(current_free_codes, next_free_codes);
+            UpdateCodes(current_free_codes, count_symbols_current_size);
         }
 
-        for (auto [key, value] : codes) {
+        for (auto [key, value] : codes) {  // TODO: remove debug outputs
             std::cout << key << ' ' << value << '\n';
         }
 
         uint16_t next_symbol = 0;
 
         std::string filename;
-        while ((next_symbol = GetSymbolFrom(codes, bs)) != FILENAME_END) {
+        while ((next_symbol = GetSymbolFrom(codes, archive_reader)) != FILENAME_END) {
             filename += static_cast<char>(next_symbol);
         }
 
-        std::cout << next_symbol << ' ' << FILENAME_END << '\n';
+        std::cout << filename << '\n';  // TODO: remove debug outputs
 
-        std::cout << filename << '\n';
+        std::ofstream file_out(filename);
 
-        std::ofstream file(filename);
-
-        BitStream out(file);
+        BitStream file_writer(file_out);
 
         while (true) {
-            next_symbol = GetSymbolFrom(codes, bs);
+            next_symbol = GetSymbolFrom(codes, archive_reader);
             if (next_symbol == ONE_MORE_FILE) {
                 break;
             }
@@ -229,9 +248,9 @@ void Decode(std::string archive_name) {
                 return;
             }
 
-            std::cout << next_symbol << ' ' << static_cast<char>(next_symbol) << '\n';
+            std::cout << next_symbol << ' ' << static_cast<char>(next_symbol) << '\n';  // TODO: remove debug outputs
 
-            out.WriteBits(BYTE_SIZE, static_cast<char>(next_symbol), false);
+            file_writer.WriteBits(BYTE_SIZE, static_cast<char>(next_symbol), false);
         }
     }
 }
@@ -245,20 +264,22 @@ int main(int argc, char* argv[]) {
         ArgsParser parser{argc, argv};
 
         if (parser.HasArg(ENCODE_FLAG)) {
-            std::vector<std::string> args = parser.GetArgValues("-c");
+            std::vector<std::string> args = parser.GetArgValues(ENCODE_FLAG);
             if (args.empty()) {
                 throw ArchiveNameNotPassed{};
             }
+
             std::string archive_name = args[0];
             if (args.size() < 2) {
                 throw FileNameNotPassed{};
             }
+
             std::vector<std::string> file_names{args.begin() + 1, args.end()};
 
             Encode(archive_name, file_names);
             
         } else if (parser.HasArg(DECODE_FLAG)) {
-            std::vector<std::string> args = parser.GetArgValues("-d");
+            std::vector<std::string> args = parser.GetArgValues(DECODE_FLAG);
             if (args.empty()) {
                 throw ArchiveNameNotPassed{};
             }
