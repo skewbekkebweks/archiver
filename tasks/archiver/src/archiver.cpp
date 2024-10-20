@@ -1,12 +1,12 @@
 #include "args_parser.h"
-#include "exception.h"
 #include "bit_stream.h"
+#include "exception.h"
 #include "trie.h"
+
 #include <cstdint>
 #include <fstream>
 #include <iostream>
 #include <optional>
-#include <ostream>
 #include <string>
 #include <map>
 #include <filesystem>

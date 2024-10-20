@@ -1,8 +1,8 @@
-#include <exception>
+#pragma once
+
 #include <fstream>
 #include <iostream>
 #include <cstdint>
-#include <istream>
 #include <vector>
 #include <optional>
 
