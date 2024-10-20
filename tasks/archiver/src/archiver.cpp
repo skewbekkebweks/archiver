@@ -303,7 +303,7 @@ int main(int argc, char* argv[]) {
             throw InvalidCommandLineArguments{};
         }
     } catch (std::exception& exception) {
-        std::cerr << exception.what() << '\n';
+        // std::cerr << exception.what() << '\n';
         return FAILED_EXIT_CODE;
     }
 
