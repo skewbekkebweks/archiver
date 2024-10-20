@@ -12,6 +12,7 @@
 #include <filesystem>
 #include <queue>
 #include <vector>
+#include <algorithm>
 
 const int SUCCESS_EXIT_CODE = 0;
 const int FAILED_EXIT_CODE = 111;
