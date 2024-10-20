@@ -7,37 +7,13 @@
 
 class ArgsParser {
 public:
-    ArgsParser(int argc, char* argv[]) {
-        for (int i = 1; i < argc; ++i) {
-            std::string current_arg = argv[i];
+    ArgsParser(int argc, char* argv[]);
 
-            if (current_arg.starts_with("-")) {
-                std::string key = current_arg;
-                std::vector<std::string> values;
+    bool HasArg(const std::string &arg) const;
 
-                while (i + 1 < argc && !std::string(argv[i + 1]).starts_with("-")) {
-                    values.push_back(argv[i + 1]);
-                    ++i;
-                }
+    std::vector<std::string> GetArgValues(const std::string &arg) const;
 
-                parsed_args_[key] = values;
-            } else {
-                positional_args_.push_back(current_arg);
-            }
-        }
-    }
-
-    bool HasArg(const std::string &arg) const {
-        return parsed_args_.contains(arg);
-    }
-
-    std::vector<std::string> GetArgValues(const std::string &arg) const {
-        return parsed_args_.at(arg);
-    }
-
-    std::vector<std::string> GetPositionalArgs() const {
-        return positional_args_;
-    }
+    std::vector<std::string> GetPositionalArgs() const;
 
 private:
     std::map<std::string, std::vector<std::string>> parsed_args_;

@@ -4,8 +4,12 @@ add_executable(
         archiver
         archiver.cpp
         args_parser.h
+        args_parser.cpp
         exception.h
         bit_stream.h
+        bit_stream.cpp
+        trie.h
+        trie.cpp
 )
 
 add_compile_options(-fsanitize=address)
