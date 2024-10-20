@@ -1,5 +1,7 @@
+#pragma once
+
 #include <map>
-#include <string>
+#include <cstdint>
 
 struct TrieNode {
     int frequency;
