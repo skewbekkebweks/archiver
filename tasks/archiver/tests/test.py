@@ -81,6 +81,7 @@ class ArchiverTester:
             input_files = os.listdir(test_case_data_dir)
 
             with tempfile.NamedTemporaryFile() as output_file:
+                print(*([self.archiver_executable, "-c", output_file.name] + input_files))
                 subprocess.check_call([self.archiver_executable, "-c", output_file.name] + input_files)
 
                 with tempfile.TemporaryDirectory() as output_dir:
