@@ -1,3 +1,5 @@
+#pragma once
+
 #include <exception>
 #include <string>
 
@@ -8,10 +10,10 @@ public:
     }
 };
 
-class FileNameNotPassed : public std::exception {
+class FilenameNotPassed : public std::exception {
 public:
     const char* what() const noexcept override {
-        return "File name not passed";
+        return "Filename not passed";
     }
 };
 
@@ -33,11 +35,4 @@ public:
     }
 private:
     std::string filename_;
-};
-
-class InvalidCommandLineArguments : public std::exception {
-public:
-    const char* what() const noexcept override {
-        return "Invalid command line arguments passed";
-    }
 };

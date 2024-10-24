@@ -1,0 +1,43 @@
+#pragma once
+
+#include <fstream>
+#include <cstdint>
+#include <vector>
+#include "exception.h"
+
+const int INT16_T_SIZE = 16;
+
+class ReadBitStream {
+public:
+    explicit ReadBitStream(std::istream& input)
+        : in_(input), buffer_(0), buffer_bit_count_(0), failed_(false) {
+    }
+
+    ReadBitStream(const ReadBitStream& other)
+        : in_(other.in_), buffer_(other.buffer_), buffer_bit_count_(other.buffer_bit_count_), failed_(other.failed_) {
+    }
+    ReadBitStream& operator=(const ReadBitStream& other) = delete;
+
+    bool ReadBits(int bits_cnt, uint16_t& num, bool is_little_endian = true);
+
+    void SetToStart();
+
+private:
+    std::istream& in_;
+    uint8_t buffer_;
+    int buffer_bit_count_;
+
+    bool failed_;
+
+    bool ReadBit(bool& bit);
+};
+
+
+class TryReadMore16BitsError : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "You can't read more than 16 bits at a time";
+    }
+};
+
+ReadBitStream GetReadBitStreamByFilename(const std::string& filename);

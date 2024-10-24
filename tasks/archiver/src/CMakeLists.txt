@@ -3,13 +3,13 @@ set(CMAKE_CXX_STANDARD 20)
 add_executable(
         archiver
         archiver.cpp
-        args_parser.h
         args_parser.cpp
-        exception.h
-        bit_stream.h
-        bit_stream.cpp
-        trie.h
         trie.cpp
+        read_bit_stream.cpp
+        write_bit_stream.cpp
+        encode.cpp
+        decode.cpp
+        utility.cpp
 )
 
 add_compile_options(-fsanitize=address)

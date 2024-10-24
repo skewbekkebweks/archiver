@@ -1,9 +1,5 @@
 #include "trie.h"
 
-bool TrieNodeCompare::operator()(const TrieNode* lhs, const TrieNode* rhs) {
-        return lhs->frequency > rhs->frequency;
-}
-
 void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_depth, TrieNode* cur_node) {
     if (cur_node->left == nullptr) {
         codes_size_count[cur_depth]++;

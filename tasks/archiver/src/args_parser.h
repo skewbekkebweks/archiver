@@ -3,6 +3,7 @@
 #include <map>
 #include <vector>
 #include <string>
+#include <exception>
 
 class ArgsParser {
 public:
@@ -17,4 +18,11 @@ public:
 private:
     std::map<std::string, std::vector<std::string>> parsed_args_;
     std::vector<std::string> positional_args_;
+};
+
+class InvalidCommandLineArgumentsError : public std::exception {
+public:
+    const char* what() const noexcept override {
+        return "Invalid command line arguments passed";
+    }
 };
