@@ -12,7 +12,7 @@ bool CompareCodes(const std::pair<uint16_t, int>& lhs, const std::pair<uint16_t,
     return lhs.second < rhs.second;
 }
 
-TrieNode* BuildTrie(std::map<uint16_t, int> frequency_map) {
+TrieNode* BuildTrie(const std::map<uint16_t, int>& frequency_map) {
     Heap<std::pair<uint64_t, TrieNode*>, std::less<std::pair<uint64_t, TrieNode*>>> frequencies;
     for (auto [symbol, frequency] : frequency_map) {
         frequencies.Push(std::make_pair(frequency, new TrieNode{symbol, nullptr, nullptr}));
@@ -35,7 +35,7 @@ TrieNode* BuildTrie(std::map<uint16_t, int> frequency_map) {
     return root;
 }
 
-std::map<uint16_t, uint16_t> GetCodesSizeCount(std::map<uint16_t, int> frequency_map) {
+std::map<uint16_t, uint16_t> GetCodesSizeCount(const std::map<uint16_t, int>& frequency_map) {
     TrieNode* root = BuildTrie(frequency_map);
     std::map<uint16_t, uint16_t> codes_size_count;
     FillCodesSizeCount(codes_size_count, 0, root);
@@ -44,7 +44,7 @@ std::map<uint16_t, uint16_t> GetCodesSizeCount(std::map<uint16_t, int> frequency
     return codes_size_count;
 }
 
-std::vector<std::pair<uint16_t, std::string>> GenerateCodes(std::map<uint16_t, int> frequency_map) {
+std::vector<std::pair<uint16_t, std::string>> GenerateCodes(const std::map<uint16_t, int>& frequency_map) {
     std::vector<std::pair<uint16_t, int>> sorted_symbols;
     for (auto [symbol, frequency] : frequency_map) {
         sorted_symbols.emplace_back(symbol, frequency);
@@ -70,7 +70,7 @@ std::vector<std::pair<uint16_t, std::string>> GenerateCodes(std::map<uint16_t, i
             codes.emplace_back(sorted_symbols[symbols_generated_count].first, current_code);
             symbols_generated_count++;
 
-            current_code = IncrementBinaryString(current_code);
+            IncrementBinaryString(current_code);
         }
 
         current_symbol_size++;
@@ -78,7 +78,7 @@ std::vector<std::pair<uint16_t, std::string>> GenerateCodes(std::map<uint16_t, i
     return codes;
 }
 
-std::map<uint16_t, int> GenerateFrequencyMap(std::string filename, int coef_speacial, bool add_name) {
+std::map<uint16_t, int> GenerateFrequencyMap(const std::string& filename, int coef_speacial, bool add_name) {
     std::map<uint16_t, int> frequency_map;
     
     frequency_map[FILENAME_END] = coef_speacial;
@@ -87,7 +87,7 @@ std::map<uint16_t, int> GenerateFrequencyMap(std::string filename, int coef_spea
 
     std::ifstream file(filename);
     if (!file.good()) {
-        throw FileDoesNotExist{filename};
+        throw FileBroken{filename};
     }
     ReadBitStream file_reader{file};
 
@@ -107,10 +107,10 @@ std::map<uint16_t, int> GenerateFrequencyMap(std::string filename, int coef_spea
     return frequency_map;
 }
 
-void Encode(std::string archive_name, std::vector<std::string> filenames) {
+void Encode(const std::string& archive_name, const std::vector<std::string>& filenames) {
     std::ofstream archive_out(archive_name);
     if (!archive_out.good()) {
-        throw FileDoesNotExist{archive_name};
+        throw FileBroken{archive_name};
     }
     WriteBitStream archive_writer{archive_out};
 
@@ -150,7 +150,7 @@ void Encode(std::string archive_name, std::vector<std::string> filenames) {
 
         std::ifstream file(filename);
         if (!file.good()) {
-            throw FileDoesNotExist{filename};
+            throw FileBroken{filename};
         }
         ReadBitStream file_reader{file};
 

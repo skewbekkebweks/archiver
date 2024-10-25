@@ -43,12 +43,3 @@ bool ReadBitStream::ReadBit(bool& bit) {
         return true;
     }
 }
-
-ReadBitStream GetReadBitStreamByFilename(const std::string& filename) {
-    std::ifstream file(filename);
-    if (!file.good()) {
-        throw FileDoesNotExist{filename};
-    }
-    
-    return ReadBitStream{file};
-}

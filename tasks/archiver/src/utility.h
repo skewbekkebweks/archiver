@@ -8,4 +8,4 @@ const int ARCHIVE_END = 258;
 
 const int BITS_IN_ITEM = 9;
 
-std::string IncrementBinaryString(std::string bin_str);
+void IncrementBinaryString(std::string& bin_str);

@@ -23,9 +23,9 @@ void PrintHelp() {
               << "      - ARCHIVE_NAME : Name of the archive file to decompress.\n"
               << "  -h, --help                                       Display this help message and exit.\n"
               << "Examples:\n"
-              << "  archiver -c my_archive.zip file1.txt file2.txt"
-              << "  archiver -d my_archive.zip"
-              << "  archiver --help"
+              << "  archiver -c my_archive.zip file1.txt file2.txt\n"
+              << "  archiver -d my_archive.zip\n"
+              << "  archiver --help\n"
               << "Note: Ensure that you have permission to read the input files and write to the desired output location.\n";
 }
 

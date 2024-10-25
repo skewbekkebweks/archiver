@@ -9,6 +9,6 @@ uint16_t ForceGetFromReader(ReadBitStream& bs, int bits_cnt);
 
 uint16_t GetSymbolFromCodes(TrieNode* root, ReadBitStream& bs);
 
-TrieNode* BuildTrie(std::map<std::string, uint16_t> codes);
+TrieNode* BuildTrie(const std::map<std::string, uint16_t>& codes);
 
-void Decode(std::string archive_name);
+void Decode(const std::string& archive_name);

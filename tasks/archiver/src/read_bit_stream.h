@@ -13,11 +13,6 @@ public:
         : in_(input), buffer_(0), buffer_bit_count_(0), failed_(false) {
     }
 
-    ReadBitStream(const ReadBitStream& other)
-        : in_(other.in_), buffer_(other.buffer_), buffer_bit_count_(other.buffer_bit_count_), failed_(other.failed_) {
-    }
-    ReadBitStream& operator=(const ReadBitStream& other) = delete;
-
     bool ReadBits(int bits_cnt, uint16_t& num, bool is_little_endian = true);
 
     void SetToStart();
@@ -39,5 +34,3 @@ public:
         return "You can't read more than 16 bits at a time";
     }
 };
-
-ReadBitStream GetReadBitStreamByFilename(const std::string& filename);
