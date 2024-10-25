@@ -1,0 +1,123 @@
+#include "decode.h"
+
+#include "exception.h"
+#include "utility.h"
+#include "write_bit_stream.h"
+
+uint16_t ForceGetFromReader(ReadBitStream& bs, int bits_cnt) {
+    uint16_t number = 0;
+    if (bs.ReadBits(bits_cnt, number)) {
+        return number;
+    }
+    
+    throw IncorrectFileDataFormat{};
+}
+
+uint16_t GetSymbolFromCodes(TrieNode* root, ReadBitStream& bs) {
+    TrieNode* current = root;
+
+    while (current->symbol == NONE_SYMBOL) {
+        bool turn = ForceGetFromReader(bs, 1);
+        if (turn) {
+            if (current->right == nullptr) {
+                throw IncorrectFileDataFormat{};
+            }
+            current = current->right;
+        } else {
+            if (current->left == nullptr) {
+                throw IncorrectFileDataFormat{};
+            }
+            current = current->left;
+        }
+    }
+
+    return current->symbol;
+}
+
+
+TrieNode* BuildTrie(std::map<std::string, uint16_t> codes) {
+    TrieNode* root = new TrieNode{NONE_SYMBOL, nullptr, nullptr};
+
+    for (auto [code, symbol] : codes) {
+        TrieNode* cur_node = root;
+        for (char c : code) {
+            if (cur_node->left == nullptr) {
+                cur_node->left = new TrieNode{NONE_SYMBOL, nullptr, nullptr};
+                cur_node->right = new TrieNode{NONE_SYMBOL, nullptr, nullptr};
+            }
+            if (c == '0') {
+                cur_node = cur_node->left;
+            } else {
+                cur_node = cur_node->right;
+            }
+        }
+        cur_node->symbol = symbol;
+    }
+
+    return root;
+}
+
+void Decode(std::string archive_name) {
+    std::ifstream archive_in(archive_name);
+
+    if (!archive_in.good()) {
+        throw FileDoesNotExist{archive_name};
+    }
+
+    ReadBitStream archive_reader{archive_in};
+
+    while (true) {
+        std::map<std::string, uint16_t> codes;
+
+        uint16_t symbols_count = ForceGetFromReader(archive_reader, BITS_IN_ITEM);
+
+        std::vector<uint16_t> symbols(symbols_count);
+        for (int i = 0; i < symbols_count; ++i) {
+            symbols[i] = ForceGetFromReader(archive_reader, BITS_IN_ITEM);
+        }
+
+        uint16_t symbols_read_count = 0;
+
+        std::string current_code;
+
+        while (symbols_read_count != symbols_count) {
+            current_code += '0';
+
+            uint16_t count_symbols_current_size = ForceGetFromReader(archive_reader, BITS_IN_ITEM);
+
+            for (uint16_t i = 0; i < count_symbols_current_size; ++i) {
+                codes[current_code] = symbols[symbols_read_count];
+                symbols_read_count++;
+
+                current_code = IncrementBinaryString(current_code);
+            }
+        }
+
+        TrieNode* huffman_tree_root = BuildTrie(codes);
+
+        uint16_t next_symbol = 0;
+
+        std::string filename;
+        while ((next_symbol = GetSymbolFromCodes(huffman_tree_root, archive_reader)) != FILENAME_END) { // ?
+            filename += static_cast<char>(next_symbol);
+        }
+
+        std::ofstream file_out(filename);
+
+        WriteBitStream file_writer(file_out);
+
+        while (true) {
+            next_symbol = GetSymbolFromCodes(huffman_tree_root, archive_reader); //?
+            if (next_symbol == ONE_MORE_FILE) {
+                break;
+            }
+            if (next_symbol == ARCHIVE_END) {
+                return;
+            }
+
+            file_writer.WriteBits(std::numeric_limits<unsigned char>::digits, static_cast<char>(next_symbol), false);
+        }
+
+        Clear(huffman_tree_root);
+    }
+}
