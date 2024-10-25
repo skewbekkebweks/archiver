@@ -11,7 +11,7 @@ public:
 
     ~WriteBitStream();
 
-    void WriteBits(int bits_cnt, uint16_t value, bool is_little_endian = true);
+    void WriteBits(int bits_cnt, uint16_t value);
 
     void WriteSeq(std::string s);
 

@@ -1,27 +1,19 @@
 #include "read_bit_stream.h"
 
+#include <limits>
 
-bool ReadBitStream::ReadBits(int bits_cnt, uint16_t& num, bool is_little_endian) {
+bool ReadBitStream::ReadBits(int bits_cnt, uint16_t& num) {
     if (bits_cnt > INT16_T_SIZE) {
         throw TryReadMore16BitsError{};
     }
     num = 0;
     bool bit = false;
 
-    if (is_little_endian) {
-        for (int i = 0; i <= bits_cnt - 1; ++i) {
-            if (!ReadBit(bit)) {
-                return false;
-            }
-            num |= (bit << i);
+    for (int i = bits_cnt - 1; i >= 0; --i) {
+        if (!ReadBit(bit)) {
+            return false;
         }
-    } else {
-        for (int i = bits_cnt - 1; i >= 0; --i) {
-            if (!ReadBit(bit)) {
-                return false;
-            }
-            num |= (bit << i);
-        }
+        num |= (bit << i);
     }
 
     return true;

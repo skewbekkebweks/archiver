@@ -7,7 +7,6 @@
 #include <utility>
 #include "heap.h"
 
-
 bool CompareCodes(const std::pair<uint16_t, int>& lhs, const std::pair<uint16_t, int>& rhs) {
     return lhs.second < rhs.second;
 }
@@ -92,7 +91,7 @@ std::map<uint16_t, int> GenerateFrequencyMap(const std::string& filename, int co
     ReadBitStream file_reader{file};
 
     uint16_t c = 0;
-    while (file_reader.ReadBits(std::numeric_limits<unsigned char>::digits, c, false)) {
+    while (file_reader.ReadBits(std::numeric_limits<unsigned char>::digits, c)) {
         frequency_map[c]++;
     }
 
@@ -155,7 +154,7 @@ void Encode(const std::string& archive_name, const std::vector<std::string>& fil
         ReadBitStream file_reader{file};
 
         uint16_t c = 0;
-        while (file_reader.ReadBits(std::numeric_limits<unsigned char>::digits, c, false)) {
+        while (file_reader.ReadBits(std::numeric_limits<unsigned char>::digits, c)) {
             archive_writer.WriteSeq(codes[c]);
         }
 

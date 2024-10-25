@@ -13,10 +13,7 @@ public:
         : in_(input), buffer_(0), buffer_bit_count_(0), failed_(false) {
     }
 
-    bool ReadBits(int bits_cnt, uint16_t& num, bool is_little_endian = true);
-
-    void SetToStart();
-
+    bool ReadBits(int bits_cnt, uint16_t& num);
 private:
     std::istream& in_;
     uint8_t buffer_;

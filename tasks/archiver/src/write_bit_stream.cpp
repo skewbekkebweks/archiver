@@ -1,18 +1,14 @@
 #include "write_bit_stream.h"
 
+#include <limits>
+
 WriteBitStream::~WriteBitStream() {
     Flush();
 }
 
-void WriteBitStream::WriteBits(int bits_cnt, uint16_t value, bool is_little_endian) {
-    if (is_little_endian) {
-        for (int i = 0; i <= bits_cnt - 1; ++i) {
-            WriteBit((value >> i) & 1);
-        }
-    } else {
-        for (int i = bits_cnt - 1; i >= 0; --i) {
-            WriteBit((value >> i) & 1);
-        }
+void WriteBitStream::WriteBits(int bits_cnt, uint16_t value) {
+    for (int i = bits_cnt - 1; i >= 0; --i) {
+        WriteBit((value >> i) & 1);
     }
 }
 

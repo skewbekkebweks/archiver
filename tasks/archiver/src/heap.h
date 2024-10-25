@@ -26,6 +26,9 @@ public:
     }
 
     void Pop() {
+        if (n_ == 0) {
+            throw HeapIsEmpty{};
+        }
         std::swap(heap_[0], heap_[n_ - 1]);
         n_--;
         heap_.pop_back();
@@ -61,7 +64,7 @@ private:
             if (!Comparator()(heap_[min_value_index], heap_[vertex])) {
                 break;
             }
-            swap(heap_[vertex], heap_[min_value_index]);
+            std::swap(heap_[vertex], heap_[min_value_index]);
             vertex = min_value_index;
         }
     }

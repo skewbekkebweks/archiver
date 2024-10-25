@@ -120,7 +120,7 @@ void Decode(const std::string& archive_name) {
                 return;
             }
 
-            file_writer.WriteBits(std::numeric_limits<unsigned char>::digits, static_cast<char>(next_symbol), false);
+            file_writer.WriteBits(std::numeric_limits<unsigned char>::digits, static_cast<char>(next_symbol));
         }
 
         Clear(huffman_tree_root);
