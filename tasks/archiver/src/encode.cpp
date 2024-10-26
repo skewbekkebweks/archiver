@@ -3,6 +3,7 @@
 #include "read_bit_stream.h"
 #include "write_bit_stream.h"
 
+#include <memory>
 #include <queue>
 #include <utility>
 #include "heap.h"
@@ -14,34 +15,34 @@ bool CompareCodes(const std::pair<uint16_t, int>& lhs, const std::pair<uint16_t,
     return lhs.second < rhs.second;
 }
 
-TrieNode* BuildTrie(const std::map<uint16_t, int>& frequency_map) {
-    Heap<std::pair<uint64_t, TrieNode*>, std::less<std::pair<uint64_t, TrieNode*>>> frequencies;
+std::shared_ptr<TrieNode> BuildTrie(const std::map<uint16_t, int>& frequency_map) {
+    Heap<std::pair<uint64_t, std::shared_ptr<TrieNode>>, std::less<std::pair<uint64_t, std::shared_ptr<TrieNode>>>> frequencies;
     for (auto [symbol, frequency] : frequency_map) {
-        frequencies.Push(std::make_pair(frequency, new TrieNode{symbol, nullptr, nullptr}));
+        frequencies.Push(std::make_pair(frequency, std::make_shared<TrieNode>(symbol, nullptr, nullptr)));
     }
 
     while (frequencies.Size() > 1) {
         uint64_t left_frequency = frequencies.Top().first;
-        TrieNode* left = frequencies.Top().second;
+        std::shared_ptr<TrieNode> left = frequencies.Top().second;
         frequencies.Pop();
         uint64_t right_frequency = frequencies.Top().first;
-        TrieNode* right = frequencies.Top().second;
+        std::shared_ptr<TrieNode> right = frequencies.Top().second;
         frequencies.Pop();
 
-        TrieNode* parent = new TrieNode{NONE_SYMBOL, left, right};
+        std::shared_ptr<TrieNode> parent = std::make_shared<TrieNode>(NONE_SYMBOL, left, right);
 
         frequencies.Push(std::make_pair(left_frequency + right_frequency, parent));
     }
 
-    TrieNode* root = frequencies.Top().second;
+    std::shared_ptr<TrieNode> root = frequencies.Top().second;
     return root;
 }
 
 std::map<uint16_t, uint16_t> GetCodesSizeCount(const std::map<uint16_t, int>& frequency_map) {
-    TrieNode* root = BuildTrie(frequency_map);
+    std::shared_ptr<TrieNode> root = BuildTrie(frequency_map);
     std::map<uint16_t, uint16_t> codes_size_count;
     FillCodesSizeCount(codes_size_count, 0, root);
-    Clear(root);
+    // Clear(root);
 
     return codes_size_count;
 }
