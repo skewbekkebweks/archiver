@@ -1,4 +1,4 @@
-#include "../src/write_bit_stream.cpp"
+#include "../../src/write_bit_stream.cpp"
 
 #include <sstream>
 #include <iostream>

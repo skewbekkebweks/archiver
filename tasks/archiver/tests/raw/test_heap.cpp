@@ -1,4 +1,4 @@
-#include "../src/heap.h"
+#include "../../src/heap.h"
 
 #include <exception>
 #include <iostream>

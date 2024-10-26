@@ -138,7 +138,7 @@ void Encode(const std::string& archive_name, const std::vector<std::string>& fil
 
         archive_writer.WriteBits(BITS_IN_ITEM, ordered_codes.size());
 
-        for (auto [symbol, code] : ordered_codes) {
+        for (const auto& [symbol, code] : ordered_codes) {
             archive_writer.WriteBits(BITS_IN_ITEM, symbol);
         }
 

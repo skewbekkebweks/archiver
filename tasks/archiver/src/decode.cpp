@@ -39,7 +39,7 @@ uint16_t GetSymbolFromCodes(std::shared_ptr<TrieNode> root, ReadBitStream& bs) {
 std::shared_ptr<TrieNode> BuildTrie(const std::map<std::string, uint16_t>& codes) {
     std::shared_ptr<TrieNode> root = std::make_shared<TrieNode>(NONE_SYMBOL, nullptr, nullptr);
 
-    for (auto [code, symbol] : codes) {
+    for (const auto& [code, symbol] : codes) {
         std::shared_ptr<TrieNode> cur_node = root;
         for (char c : code) {
             if (cur_node->left == nullptr) {

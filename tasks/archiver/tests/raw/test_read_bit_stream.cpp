@@ -1,4 +1,4 @@
-#include "../src/read_bit_stream.cpp"
+#include "../../src/read_bit_stream.cpp"
 
 #include <sstream>
 #include <iostream>
