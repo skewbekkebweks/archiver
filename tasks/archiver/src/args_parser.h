@@ -9,9 +9,9 @@ class ArgsParser {
 public:
     ArgsParser(int argc, char* argv[]);
 
-    bool HasArg(const std::string &arg) const;
+    bool HasArg(const std::string& arg) const;
 
-    std::vector<std::string> GetArgValues(const std::string &arg) const;
+    std::vector<std::string> GetArgValues(const std::string& arg) const;
 
     std::vector<std::string> GetPositionalArgs() const;
 

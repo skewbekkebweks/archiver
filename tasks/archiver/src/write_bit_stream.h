@@ -6,8 +6,7 @@
 
 class WriteBitStream {
 public:
-    explicit WriteBitStream(std::ostream& output)
-        : out_(output), buffer_(0), buffer_bit_count_(0) {
+    explicit WriteBitStream(std::ostream& output) : out_(output), buffer_(0), buffer_bit_count_(0) {
     }
 
     ~WriteBitStream();

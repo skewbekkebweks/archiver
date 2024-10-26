@@ -16,7 +16,8 @@ bool CompareCodes(const std::pair<uint16_t, int>& lhs, const std::pair<uint16_t,
 }
 
 std::shared_ptr<TrieNode> BuildTrie(const std::map<uint16_t, int>& frequency_map) {
-    Heap<std::pair<uint64_t, std::shared_ptr<TrieNode>>, std::less<std::pair<uint64_t, std::shared_ptr<TrieNode>>>> frequencies;
+    Heap<std::pair<uint64_t, std::shared_ptr<TrieNode>>, std::less<std::pair<uint64_t, std::shared_ptr<TrieNode>>>>
+        frequencies;
     for (auto [symbol, frequency] : frequency_map) {
         frequencies.Push(std::make_pair(frequency, std::make_shared<TrieNode>(symbol, nullptr, nullptr)));
     }
@@ -51,7 +52,7 @@ std::vector<std::pair<uint16_t, std::string>> GenerateCodes(const std::map<uint1
     std::vector<std::pair<uint16_t, int>> sorted_symbols;
     for (auto [symbol, frequency] : frequency_map) {
         sorted_symbols.emplace_back(symbol, frequency);
-    } 
+    }
     std::sort(sorted_symbols.begin(), sorted_symbols.end(), CompareCodes);
     std::reverse(sorted_symbols.begin(), sorted_symbols.end());
 
@@ -83,7 +84,7 @@ std::vector<std::pair<uint16_t, std::string>> GenerateCodes(const std::map<uint1
 
 std::map<uint16_t, int> GenerateFrequencyMap(const std::string& filename, int coef_speacial, bool add_name) {
     std::map<uint16_t, int> frequency_map;
-    
+
     frequency_map[FILENAME_END] = coef_speacial;
     frequency_map[ONE_MORE_FILE] = coef_speacial;
     frequency_map[ARCHIVE_END] = coef_speacial;
@@ -119,7 +120,7 @@ void Encode(const std::string& archive_name, const std::vector<std::string>& fil
 
     for (size_t i = 0; i < filenames.size(); ++i) {
         const std::string filename = filenames[i];
-        
+
         std::map<uint16_t, int> frequency_map = GenerateFrequencyMap(filename);
 
         std::vector<std::pair<uint16_t, std::string>> ordered_codes = GenerateCodes(frequency_map);

@@ -1,7 +1,8 @@
 #include "trie.h"
 #include <memory>
 
-void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_depth, std::shared_ptr<TrieNode> cur_node) {
+void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_depth,
+                        std::shared_ptr<TrieNode> cur_node) {
     if (cur_node->left == nullptr) {
         codes_size_count[cur_depth]++;
         return;

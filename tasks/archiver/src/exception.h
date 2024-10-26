@@ -26,13 +26,15 @@ public:
 
 class FileBroken : public std::exception {
 public:
-    explicit FileBroken(const std::string& filename) : filename_(filename) {}
+    explicit FileBroken(const std::string& filename) : filename_(filename) {
+    }
 
     const char* what() const noexcept override {
         std::string message = "File does not exist: " + filename_;
         const char* c = message.c_str();
-        return c; 
+        return c;
     }
+    
 private:
     std::string filename_;
 };

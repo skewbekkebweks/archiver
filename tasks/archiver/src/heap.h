@@ -41,12 +41,13 @@ public:
 
         ShiftUp(n_ - 1);
     }
+
 private:
     int n_;
     std::vector<T> heap_;
 
     int GetParent(int vertex) {
-        return (vertex - 1) / 2; 
+        return (vertex - 1) / 2;
     }
 
     void ShiftUp(int vertex) {
@@ -60,7 +61,8 @@ private:
         while (2 * vertex + 1 < n_) {
             int left_index = 2 * vertex + 1;
             int right_index = 2 * vertex + 2;
-            int min_value_index = (right_index < n_ && Comparator()(heap_[right_index], heap_[left_index]) ? right_index : left_index);
+            int min_value_index = 
+                (right_index < n_ && Comparator()(heap_[right_index], heap_[left_index]) ? right_index : left_index);
             if (!Comparator()(heap_[min_value_index], heap_[vertex])) {
                 break;
             }

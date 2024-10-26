@@ -1,6 +1,6 @@
 #include "args_parser.h"
 
-ArgsParser::ArgsParser(int argc, char* argv[]) {
+ArgsParser::ArgsParser(int argc, char *argv[]) {
     for (int i = 1; i < argc; ++i) {
         std::string current_arg = argv[i];
 

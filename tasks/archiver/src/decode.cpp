@@ -11,7 +11,7 @@ uint16_t ForceGetFromReader(ReadBitStream& bs, int bits_cnt) {
     if (bs.ReadBits(bits_cnt, number)) {
         return number;
     }
-    
+
     throw IncorrectArchiveDataFormat{};
 }
 
@@ -35,7 +35,6 @@ uint16_t GetSymbolFromCodes(std::shared_ptr<TrieNode> root, ReadBitStream& bs) {
 
     return current->symbol;
 }
-
 
 std::shared_ptr<TrieNode> BuildTrie(const std::map<std::string, uint16_t>& codes) {
     std::shared_ptr<TrieNode> root = std::make_shared<TrieNode>(NONE_SYMBOL, nullptr, nullptr);
