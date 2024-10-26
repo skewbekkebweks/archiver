@@ -7,6 +7,9 @@
 #include <utility>
 #include "heap.h"
 
+#include <algorithm>
+#include <filesystem>
+
 bool CompareCodes(const std::pair<uint16_t, int>& lhs, const std::pair<uint16_t, int>& rhs) {
     return lhs.second < rhs.second;
 }
