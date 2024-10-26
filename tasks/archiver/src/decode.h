@@ -4,6 +4,9 @@
 #include "trie.h"
 
 #include <cstdint>
+#include <string>
+#include <vector>
+#include <map>
 
 uint16_t ForceGetFromReader(ReadBitStream& bs, int bits_cnt);
 

@@ -3,6 +3,8 @@
 #include "trie.h"
 
 #include <cstdint>
+#include <string>
+#include <vector>
 #include <map>
 
 bool CompareCodes(const std::pair<uint16_t, int>& lhs, const std::pair<uint16_t, int>& rhs);

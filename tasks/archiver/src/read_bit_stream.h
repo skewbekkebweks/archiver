@@ -2,7 +2,6 @@
 
 #include <fstream>
 #include <cstdint>
-#include <vector>
 #include "exception.h"
 
 const int INT16_T_SIZE = 16;
