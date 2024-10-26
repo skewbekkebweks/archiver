@@ -19,5 +19,5 @@ struct TrieNode {
     }
 };
 
-void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_depth, 
+void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_depth,
                         std::shared_ptr<TrieNode> cur_node);

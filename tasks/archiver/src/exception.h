@@ -34,7 +34,7 @@ public:
         const char* c = message.c_str();
         return c;
     }
-    
+
 private:
     std::string filename_;
 };
