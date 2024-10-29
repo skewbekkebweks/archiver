@@ -31,3 +31,23 @@ std::vector<std::string> ArgsParser::GetArgValues(const std::string &arg) const 
 std::vector<std::string> ArgsParser::GetPositionalArgs() const {
     return positional_args_;
 }
+
+bool ArgsParser::ValidateArg(const std::string& arg, size_t count, BoundType bound_type) const {
+    if (!HasArg(arg)) {
+        return false;
+    }
+
+    switch (bound_type) {
+        case at_least:
+            return count <= GetArgValues(arg).size();
+            break;
+        case exact:
+            return count == GetArgValues(arg).size();
+            break;
+        case as_maximum:
+            return count >= GetArgValues(arg).size();
+            break;
+    }
+
+    return false;
+}

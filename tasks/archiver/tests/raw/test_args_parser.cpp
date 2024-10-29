@@ -20,9 +20,9 @@ int main() {
         ArgsParser parser{argc, argv};
         std::cout << "Test 1: No Arguments" << std::endl;
         if (!parser.HasArg("test")) {
-            std::cout << green << "PASSED" << reset << std::endl;
+            std::cout << green << passed << reset << std::endl;
         } else {
-            std::cout << red << "FAILED" << " ArgsParser has an argument, although shouldn't" << reset << std::endl;
+            std::cout << red << failed << " ArgsParser has an argument, although shouldn't" << reset << std::endl;
         }
     }
 
@@ -33,9 +33,9 @@ int main() {
         std::cout << "Test 2: Try to get non-existent argument" << std::endl;
         try {
             parser.GetArgValues("test");
-            std::cout << red << "FAILED" << " ArgsParser has an argument, although shouldn't" << reset << std::endl;
+            std::cout << red << failed << " ArgsParser has an argument, although shouldn't" << reset << std::endl;
         } catch (std::exception& ex) {
-            std::cout << green << "PASSED" << reset << std::endl;
+            std::cout << green << passed << reset << std::endl;
         }
     }
 
@@ -47,9 +47,9 @@ int main() {
         std::vector<std::string> positional = parser.GetPositionalArgs();
         std::vector<std::string> positional_need = {"first", "second"};
         if (positional == positional_need) {
-            std::cout << green << "PASSED" << reset << std::endl;
+            std::cout << green << passed << reset << std::endl;
         } else {
-            std::cout << red << "FAILED" << " Incorrect positional arguments" << reset << std::endl;
+            std::cout << red << failed << " Incorrect positional arguments" << reset << std::endl;
         }
     }
 
@@ -58,16 +58,21 @@ int main() {
         int argc = 5;
         ArgsParser parser{argc, argv};
         std::cout << "Test 4: Check named argument" << std::endl;
+        if (parser.ValidateArg("-v", 2, BoundType::exact)) {
+            std::cout << green << passed << reset << std::endl;
+        } else {
+            std::cout << red << failed << " Parser has incorrect number of argumnets" << reset << std::endl;
+        }
         if (parser.HasArg("-v")) {
             std::vector<std::string> args = parser.GetArgValues("-v");
             std::vector<std::string> args_need = {"second", "third"};
             if (args == args_need) {
-                std::cout << green << "PASSED" << reset << std::endl;
+                std::cout << green << passed << reset << std::endl;
             } else {
-                std::cout << red << "FAILED" << " Argument values are incorrect" << reset << std::endl;
+                std::cout << red << failed << " Argument values are incorrect" << reset << std::endl;
             }
         } else {
-            std::cout << red << "FAILED" << " Parser hasn't named argument" << reset << std::endl;
+            std::cout << red << failed << " Parser hasn't named argument" << reset << std::endl;
         }
     }
 }

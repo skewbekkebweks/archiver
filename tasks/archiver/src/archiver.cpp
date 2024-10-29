@@ -36,30 +36,22 @@ int main(int argc, char* argv[]) {
     try {
         ArgsParser parser{argc, argv};
 
-        if (parser.HasArg(ENCODE_FLAG)) {
+        if (parser.ValidateArg(ENCODE_FLAG, 2, BoundType::at_least)) {
             std::vector<std::string> args = parser.GetArgValues(ENCODE_FLAG);
-            if (args.empty()) {
-                throw ArchiveNameNotPassed{};
-            }
 
             std::string archive_name = args[0];
-            if (args.size() < 2) {
-                throw FilenameNotPassed{};
-            }
 
             std::vector<std::string> file_names{args.begin() + 1, args.end()};
 
             Encode(archive_name, file_names);
 
-        } else if (parser.HasArg(DECODE_FLAG)) {
+        } else if (parser.ValidateArg(DECODE_FLAG, 1, BoundType::exact)) {
             std::vector<std::string> args = parser.GetArgValues(DECODE_FLAG);
-            if (args.empty()) {
-                throw ArchiveNameNotPassed{};
-            }
+
             std::string archive_name = args[0];
 
             Decode(archive_name);
-        } else if (parser.HasArg(HELP_FLAG)) {
+        } else if (parser.ValidateArg(HELP_FLAG, 0, BoundType::exact)) {
             PrintHelp();
         } else {
             throw InvalidCommandLineArgumentsError{};
