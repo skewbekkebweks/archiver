@@ -110,7 +110,7 @@ std::map<uint16_t, int> GenerateFrequencyMap(const std::string& filename, int co
 
 void WriteFile(WriteBitStream& writer, const std::string filename,
                const std::vector<std::pair<uint16_t, std::string>>& ordered_codes,
-               const std::map<uint16_t, std::string>& codes,  const std::map<size_t, int16_t>& count_with_size,
+               const std::map<uint16_t, std::string>& codes, const std::map<size_t, int16_t>& count_with_size,
                size_t max_sybmol_code_size) {
     writer.WriteBits(BITS_IN_ITEM, ordered_codes.size());
 
