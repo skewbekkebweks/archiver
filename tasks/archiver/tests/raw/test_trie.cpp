@@ -14,7 +14,7 @@ int main() {
 
     {
         std::cout << "Test 1: A single leaf node" << std::endl;
-        std::shared_ptr<TrieNode> root = std::make_shared<TrieNode>(0, nullptr, nullptr);
+        TrieNode* root = new TrieNode{0};
         std::map<uint16_t, uint16_t> codes_size_count;
         FillCodesSizeCount(codes_size_count, 1, root);
         
@@ -27,9 +27,9 @@ int main() {
 
     {
         std::cout << "Test 2: A tree with more nodes, depth 1" << std::endl;
-        std::shared_ptr<TrieNode> root = std::make_shared<TrieNode>(NONE_SYMBOL, nullptr, nullptr);
-        root->left = std::make_shared<TrieNode>(0, nullptr, nullptr);
-        root->right = std::make_shared<TrieNode>(1, nullptr, nullptr);
+        TrieNode* root = new TrieNode{NONE_SYMBOL};
+        root->left = new TrieNode{0};
+        root->right = new TrieNode{1};
         
         std::map<uint16_t, uint16_t> codes_size_count;
         FillCodesSizeCount(codes_size_count, 1, root);
@@ -48,11 +48,11 @@ int main() {
 
     {
         std::cout << "Test 3: A tree with more levels" << std::endl;
-        std::shared_ptr<TrieNode> root = std::make_shared<TrieNode>(NONE_SYMBOL, nullptr, nullptr);
-        root->left = std::make_shared<TrieNode>(NONE_SYMBOL, nullptr, nullptr);
-        root->right = std::make_shared<TrieNode>(0, nullptr, nullptr);
-        root->left->left = std::make_shared<TrieNode>(1, nullptr, nullptr);
-        root->left->right = std::make_shared<TrieNode>(2, nullptr, nullptr);
+        TrieNode* root = new TrieNode{NONE_SYMBOL};
+        root->left = new TrieNode{NONE_SYMBOL};
+        root->right = new TrieNode{0};
+        root->left->left = new TrieNode{1};
+        root->left->right = new TrieNode{2};
 
         std::map<uint16_t, uint16_t> codes_size_count;
         FillCodesSizeCount(codes_size_count, 1, root);
@@ -76,13 +76,13 @@ int main() {
 
     {
         std::cout << "Test 4: A complete binary tree" << std::endl;
-        std::shared_ptr<TrieNode> root = std::make_shared<TrieNode>(NONE_SYMBOL, nullptr, nullptr);
-        root->left = std::make_shared<TrieNode>(NONE_SYMBOL, nullptr, nullptr);
-        root->right = std::make_shared<TrieNode>(NONE_SYMBOL, nullptr, nullptr);
-        root->left->left = std::make_shared<TrieNode>(1, nullptr, nullptr);
-        root->left->right = std::make_shared<TrieNode>(2, nullptr, nullptr);
-        root->right->left = std::make_shared<TrieNode>(3, nullptr, nullptr);
-        root->right->right = std::make_shared<TrieNode>(4, nullptr, nullptr);
+        TrieNode* root = new TrieNode{NONE_SYMBOL};
+        root->left = new TrieNode{NONE_SYMBOL};
+        root->right = new TrieNode{NONE_SYMBOL};
+        root->left->left = new TrieNode{1};
+        root->left->right = new TrieNode{2};
+        root->right->left = new TrieNode{3};
+        root->right->right = new TrieNode{4};
 
         std::map<uint16_t, uint16_t> codes_size_count;
         FillCodesSizeCount(codes_size_count, 1, root);

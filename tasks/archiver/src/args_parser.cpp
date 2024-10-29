@@ -32,7 +32,7 @@ std::vector<std::string> ArgsParser::GetPositionalArgs() const {
     return positional_args_;
 }
 
-bool ArgsParser::ValidateArg(const std::string& arg, size_t count, BoundType bound_type) const {
+bool ArgsParser::ValidateArg(const std::string &arg, size_t count, BoundType bound_type) const {
     if (!HasArg(arg)) {
         return false;
     }

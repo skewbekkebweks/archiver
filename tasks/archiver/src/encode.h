@@ -9,7 +9,7 @@
 
 bool CompareCodes(const std::pair<uint16_t, int>& lhs, const std::pair<uint16_t, int>& rhs);
 
-std::shared_ptr<TrieNode> BuildTrie(const std::map<uint16_t, int>& frequency_map);
+TrieNode* BuildTrie(const std::map<uint16_t, int>& frequency_map);
 
 std::map<uint16_t, uint16_t> GetCodesSizeCount(const std::map<uint16_t, int>& frequency_map);
 

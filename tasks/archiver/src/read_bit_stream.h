@@ -25,7 +25,7 @@ public:
     explicit ReadBitStream(std::istream& input) : in_(input), buffer_(0), buffer_bit_count_(0), failed_(false) {
     }
 
-    template<typename T>
+    template <typename T>
     bool ReadBits(int bits_cnt, T& num) {
         if (!std::is_integral<T>::value) {
             throw NotIntegerPassedError{};

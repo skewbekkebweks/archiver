@@ -5,11 +5,7 @@
 #include <string>
 #include <exception>
 
-enum BoundType {
-    at_least,
-    exact,
-    as_maximum
-};
+enum BoundType { at_least, exact, as_maximum };
 
 class ArgsParser {
 public:

@@ -1,8 +1,27 @@
 #include "trie.h"
 #include <memory>
 
+void Trie::Clear(TrieNode* node) {
+    if (node == nullptr) {
+        return;
+    }
+
+    Clear(node->left);
+    Clear(node->right);
+
+    delete node;
+}
+
+void Trie::Clear() {
+    Clear(root);
+}
+
+Trie::~Trie() {
+    Clear();
+}
+
 void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_depth,
-                        std::shared_ptr<TrieNode> cur_node) {
+                        TrieNode* cur_node) {
     if (cur_node->left == nullptr) {
         codes_size_count[cur_depth]++;
         return;

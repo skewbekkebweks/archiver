@@ -15,35 +15,34 @@ bool CompareCodes(const std::pair<uint16_t, int>& lhs, const std::pair<uint16_t,
     return lhs.second < rhs.second;
 }
 
-std::shared_ptr<TrieNode> BuildTrie(const std::map<uint16_t, int>& frequency_map) {
-    Heap<std::pair<uint64_t, std::shared_ptr<TrieNode>>, std::less<std::pair<uint64_t, std::shared_ptr<TrieNode>>>>
+TrieNode* BuildTrie(const std::map<uint16_t, int>& frequency_map) {
+    Heap<std::pair<uint64_t, TrieNode*>, std::less<std::pair<uint64_t, TrieNode*>>>
         frequencies;
     for (auto [symbol, frequency] : frequency_map) {
-        frequencies.Push(std::make_pair(frequency, std::make_shared<TrieNode>(symbol, nullptr, nullptr)));
+        frequencies.Push(std::make_pair(frequency, new TrieNode{symbol}));
     }
 
     while (frequencies.Size() > 1) {
         uint64_t left_frequency = frequencies.Top().first;
-        std::shared_ptr<TrieNode> left = frequencies.Top().second;
+        TrieNode* left = frequencies.Top().second;
         frequencies.Pop();
         uint64_t right_frequency = frequencies.Top().first;
-        std::shared_ptr<TrieNode> right = frequencies.Top().second;
+        TrieNode* right = frequencies.Top().second;
         frequencies.Pop();
 
-        std::shared_ptr<TrieNode> parent = std::make_shared<TrieNode>(NONE_SYMBOL, left, right);
+        TrieNode* parent = new TrieNode{NONE_SYMBOL, left, right};
 
         frequencies.Push(std::make_pair(left_frequency + right_frequency, parent));
     }
 
-    std::shared_ptr<TrieNode> root = frequencies.Top().second;
+    TrieNode* root = frequencies.Top().second;
     return root;
 }
 
 std::map<uint16_t, uint16_t> GetCodesSizeCount(const std::map<uint16_t, int>& frequency_map) {
-    std::shared_ptr<TrieNode> root = BuildTrie(frequency_map);
+    Trie trie = Trie{BuildTrie(frequency_map)};
     std::map<uint16_t, uint16_t> codes_size_count;
-    FillCodesSizeCount(codes_size_count, 0, root);
-    // Clear(root);
+    FillCodesSizeCount(codes_size_count, 0, trie.root);
 
     return codes_size_count;
 }
