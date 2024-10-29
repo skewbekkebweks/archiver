@@ -16,8 +16,7 @@ bool CompareCodes(const std::pair<uint16_t, int>& lhs, const std::pair<uint16_t,
 }
 
 TrieNode* BuildTrie(const std::map<uint16_t, int>& frequency_map) {
-    Heap<std::pair<uint64_t, TrieNode*>, std::less<std::pair<uint64_t, TrieNode*>>>
-        frequencies;
+    Heap<std::pair<uint64_t, TrieNode*>, std::less<std::pair<uint64_t, TrieNode*>>> frequencies;
     for (auto [symbol, frequency] : frequency_map) {
         frequencies.Push(std::make_pair(frequency, new TrieNode{symbol}));
     }

@@ -13,8 +13,7 @@ struct TrieNode {
     TrieNode* left;
     TrieNode* right;
 
-    explicit TrieNode(uint32_t symbol, TrieNode* left = nullptr,
-                      TrieNode* right = nullptr)
+    explicit TrieNode(uint32_t symbol, TrieNode* left = nullptr, TrieNode* right = nullptr)
         : symbol(symbol), left(left), right(right) {
     }
 };
@@ -28,5 +27,4 @@ struct Trie {
     void Clear();
 };
 
-void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_depth,
-                        TrieNode* cur_node);
+void FillCodesSizeCount(std::map<uint16_t, uint16_t>& codes_size_count, int cur_depth, TrieNode* cur_node);
