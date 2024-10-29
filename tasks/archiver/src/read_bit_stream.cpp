@@ -2,23 +2,6 @@
 
 #include <limits>
 
-bool ReadBitStream::ReadBits(int bits_cnt, uint64_t& num) {
-    if (bits_cnt > INT64_T_SIZE) {
-        throw TryReadMore64BitsError{};
-    }
-    num = 0;
-    bool bit = false;
-
-    for (int i = bits_cnt - 1; i >= 0; --i) {
-        if (!ReadBit(bit)) {
-            return false;
-        }
-        num |= (bit << i);
-    }
-
-    return true;
-}
-
 bool ReadBitStream::ReadBit(bool& bit) {
     if (buffer_bit_count_ == 0) {
         if (!in_.get(reinterpret_cast<char&>(buffer_))) {
