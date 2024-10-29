@@ -3,7 +3,6 @@
 #include "read_bit_stream.h"
 #include "write_bit_stream.h"
 
-#include <memory>
 #include <queue>
 #include <utility>
 #include "heap.h"
@@ -109,6 +108,39 @@ std::map<uint16_t, int> GenerateFrequencyMap(const std::string& filename, int co
     return frequency_map;
 }
 
+void WriteFile(WriteBitStream& writer, const std::string filename, const std::vector<std::pair<uint16_t, std::string>>& ordered_codes, const std::map<uint16_t, std::string>& codes, const std::map<size_t, int16_t>& count_with_size, size_t max_sybmol_code_size) {
+    writer.WriteBits(BITS_IN_ITEM, ordered_codes.size());
+
+    for (const auto& [symbol, code] : ordered_codes) {
+        writer.WriteBits(BITS_IN_ITEM, symbol);
+    }
+
+    for (size_t size = 1; size <= max_sybmol_code_size; ++size) {
+        if (count_with_size.contains(size)) {
+            writer.WriteBits(BITS_IN_ITEM, count_with_size.at(size));
+        } else {
+            writer.WriteBits(BITS_IN_ITEM, 0);
+        }
+    }
+
+    std::string filename_wo_path = std::filesystem::path(filename).filename().string();
+    for (char c : filename_wo_path) {
+        writer.WriteSeq(codes.at(c));
+    }
+    writer.WriteSeq(codes.at(FILENAME_END));
+
+    std::ifstream file(filename);
+    if (!file.good()) {
+        throw FileBroken{filename};
+    }
+    ReadBitStream file_reader{file};
+
+    uint16_t c = 0;
+    while (file_reader.ReadBits(std::numeric_limits<unsigned char>::digits, c)) {
+        writer.WriteSeq(codes.at(c));
+    }
+}
+
 void Encode(const std::string& archive_name, const std::vector<std::string>& filenames) {
     std::ofstream archive_out(archive_name);
     if (!archive_out.good()) {
@@ -134,32 +166,7 @@ void Encode(const std::string& archive_name, const std::vector<std::string>& fil
             max_sybmol_code_size = std::max(max_sybmol_code_size, code.size());
         }
 
-        archive_writer.WriteBits(BITS_IN_ITEM, ordered_codes.size());
-
-        for (const auto& [symbol, code] : ordered_codes) {
-            archive_writer.WriteBits(BITS_IN_ITEM, symbol);
-        }
-
-        for (size_t size = 1; size <= max_sybmol_code_size; ++size) {
-            archive_writer.WriteBits(BITS_IN_ITEM, count_with_size[size]);
-        }
-
-        std::string filename_wo_path = std::filesystem::path(filename).filename().string();
-        for (char c : filename_wo_path) {
-            archive_writer.WriteSeq(codes[c]);
-        }
-        archive_writer.WriteSeq(codes[FILENAME_END]);
-
-        std::ifstream file(filename);
-        if (!file.good()) {
-            throw FileBroken{filename};
-        }
-        ReadBitStream file_reader{file};
-
-        uint16_t c = 0;
-        while (file_reader.ReadBits(std::numeric_limits<unsigned char>::digits, c)) {
-            archive_writer.WriteSeq(codes[c]);
-        }
+        WriteFile(archive_writer, filename, ordered_codes, codes, count_with_size, max_sybmol_code_size);
 
         if (i == filenames.size() - 1) {
             archive_writer.WriteSeq(codes[ARCHIVE_END]);

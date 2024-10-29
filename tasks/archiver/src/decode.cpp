@@ -16,8 +16,8 @@ uint16_t ForceGetFromReader(ReadBitStream& bs, int bits_cnt) {
     throw IncorrectArchiveDataFormat{};
 }
 
-uint16_t GetSymbolFromCodes(TrieNode* root, ReadBitStream& bs) {
-    TrieNode* current = root;
+uint16_t GetSymbolFromCodes(Trie& trie, ReadBitStream& bs) {
+    TrieNode* current = trie.root;
 
     while (current->symbol == NONE_SYMBOL) {
         bool turn = ForceGetFromReader(bs, 1);
@@ -104,7 +104,7 @@ void Decode(const std::string& archive_name) {
         uint16_t next_symbol = 0;
 
         std::string filename;
-        while ((next_symbol = GetSymbolFromCodes(huffman_tree.root, archive_reader)) != FILENAME_END) {
+        while ((next_symbol = GetSymbolFromCodes(huffman_tree, archive_reader)) != FILENAME_END) {
             filename += static_cast<char>(next_symbol);
         }
 
@@ -113,7 +113,7 @@ void Decode(const std::string& archive_name) {
         WriteBitStream file_writer(file_out);
 
         while (true) {
-            next_symbol = GetSymbolFromCodes(huffman_tree.root, archive_reader);
+            next_symbol = GetSymbolFromCodes(huffman_tree, archive_reader);
             if (next_symbol == ONE_MORE_FILE) {
                 break;
             }

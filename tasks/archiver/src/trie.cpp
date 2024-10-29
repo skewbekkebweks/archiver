@@ -1,5 +1,4 @@
 #include "trie.h"
-#include <memory>
 
 void Trie::Clear(TrieNode* node) {
     if (node == nullptr) {

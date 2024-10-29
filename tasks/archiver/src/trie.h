@@ -3,7 +3,6 @@
 #include <limits>
 #include <map>
 #include <cstdint>
-#include <memory>
 
 const uint32_t NONE_SYMBOL = std::numeric_limits<uint32_t>::max();
 
