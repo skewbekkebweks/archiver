@@ -4,14 +4,14 @@
 #include <cstdint>
 #include "exception.h"
 
-const int INT16_T_SIZE = 16;
+const int INT64_T_SIZE = 64;
 
 class ReadBitStream {
 public:
     explicit ReadBitStream(std::istream& input) : in_(input), buffer_(0), buffer_bit_count_(0), failed_(false) {
     }
 
-    bool ReadBits(int bits_cnt, uint16_t& num);
+    bool ReadBits(int bits_cnt, uint64_t& num);
 
 private:
     std::istream& in_;
@@ -23,9 +23,9 @@ private:
     bool ReadBit(bool& bit);
 };
 
-class TryReadMore16BitsError : public std::exception {
+class TryReadMore64BitsError : public std::exception {
 public:
     const char* what() const noexcept override {
-        return "You can't read more than 16 bits at a time";
+        return "You can't read more than 64 bits at a time";
     }
 };

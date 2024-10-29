@@ -2,9 +2,9 @@
 
 #include <limits>
 
-bool ReadBitStream::ReadBits(int bits_cnt, uint16_t& num) {
-    if (bits_cnt > INT16_T_SIZE) {
-        throw TryReadMore16BitsError{};
+bool ReadBitStream::ReadBits(int bits_cnt, uint64_t& num) {
+    if (bits_cnt > INT64_T_SIZE) {
+        throw TryReadMore64BitsError{};
     }
     num = 0;
     bool bit = false;
